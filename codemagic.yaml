@@ -1,0 +1,12 @@
+workflows:
+  react-native-android:
+    name: Build TapTitan APK
+    instance_type: mac_mini_m2
+    scripts:
+      - name: Build Android APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/debug/*.apk
