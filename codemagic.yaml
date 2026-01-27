@@ -1,13 +1,23 @@
 workflows:
   react-native-android:
-    name: Build TapTitan APK
+    name: Build taptitan APK
     instance_type: mac_mini_m2
     scripts:
-      - name: Build Android APK
+      - name: Force Find Engine and Build
         script: |
-          cd template/android
+          # This looks for the android folder anywhere in your repo
+          export ANDROID_DIR=$(find . -type d -name "android" | head -n 1)
+          
+          if [ -z "$ANDROID_DIR" ]; then
+            echo "ERROR: I looked everywhere but the 'android' folder is missing from GitHub!"
+            exit 1
+          fi
+          
+          echo "Success! Found the engine at: $ANDROID_DIR"
+          cd "$ANDROID_DIR"
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
-      - template/android/app/build/outputs/apk/debug/*.apk
+      - "**/build/outputs/apk/debug/*.apk"
+      
       
