@@ -18,3 +18,8 @@ workflows:
     artifacts:
       - "**/build/outputs/apk/debug/*.apk"
       
+scripts:
+  - |
+    cd template && npm install
+    cd template/android && chmod +x gradlew && ./gradlew assembleDebug
+    
