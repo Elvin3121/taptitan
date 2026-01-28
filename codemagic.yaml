@@ -1,22 +1,29 @@
 workflows:
-  react-native-android:
-    name: build-taptitan
-    instance_type: mac_mini_m2
+  android-release:
+    name: Android Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2 # Uses your 500 free monthly minutes
     scripts:
-      - name: Install and Build
-        script: |
-          # Go to where your package.json is
+      - name: Clean and Install Dependencies
+        script: | 
           cd template
-          
-          # Install the missing parts (node_modules)
-          npm install
-          
-          # Now go build the APK
-          cd android
+          # Force delete old modules to prevent "module not found" errors
+          rm -rf node_modules
+          npm install --no-audit --no-fund
+      - name: Build Release APK
+        script: |
+          cd template/android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          # Added the timeout fix (-Dorg.gradle.internal.http.socketTimeout=600000)
+          # 'assembleRelease' creates the assets folder and the bundle
+          ./gradlew assembleRelease -Dorg.gradle.internal.http.socketTimeout=600000
     artifacts:
-      - "**/build/outputs/apk/debug/*.apk"
+      - template/android/app/build/outputs/apk/release/*.apk
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com # CHANGE THIS to your email to skip paywalls!
+          
       
 scripts:
   - |
